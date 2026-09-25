@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>المسبحة الملكية الفاخرة | Royal Tasbih</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --obsidian-bg: #0B0E14;
+      --obsidian-card: #141A23;
+      --obsidian-elevated: #1B2330;
+      --obsidian-stroke: #253142;
+      --gold-bright: #F5D77F;
+      --gold-primary: #D4AF37;
+      --gold-dark: #8F721A;
+      --emerald: #10B981;
+      --ruby: #EF4444;
+      --text-primary: #F3F4F6;
+      --text-secondary: #9CA3AF;
+      --text-muted: #6B7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--obsidian-bg);
+      color: var(--text-primary);
+      font-family: 'Tajawal', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 0 auto;
+    }
+
+    /* شريط العنوان */
+    header {
+      text-align: center;
+      padding: 8px 0;
+    }
+    header h1 {
+      font-family: 'Amiri', serif;
+      font-size: 28px;
+      color: var(--gold-bright);
+      text-shadow: 0 0 16px rgba(245, 215, 127, 0.3);
+    }
+    header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* شريط الإحصائيات العلوي */
+    .metrics-ribbon {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+    .metric-card {
+      flex: 1;
+      background: var(--obsidian-card);
+      border: 1px solid var(--obsidian-stroke);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .metric-card.total {
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+    .metric-card.today {
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .metric-title {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .metric-val {
+      font-family: 'Amiri', serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .metric-val.gold { color: var(--gold-bright); }
+    .metric-val.emerald { color: var(--emerald); }
+
+    /* بطاقة اختيار الذكر والهدف */
+    .dhikr-select-card {
+      background: var(--obsidian-card);
+      border: 1px solid var(--obsidian-stroke);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dhikr-text-display {
+      text-align: center;
+      font-family: 'Amiri', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--gold-bright);
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .targets-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .target-btn {
+      background: var(--obsidian-elevated);
+      border: 1px solid var(--obsidian-stroke);
+      color: var(--text-secondary);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .target-btn.active {
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+      color: #000;
+      font-weight: bold;
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
+
+    /* منطقة عداد التسبيح الدائري الملكي */
+    .royal-counter-wrapper {
+      position: relative;
+      width: 290px;
+      height: 290px;
+      margin: 10px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .counter-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    /* القبة المركزية التفاعلية */
+    .central-bead {
+      width: 195px;
+      height: 195px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #253142, #141A23 60%, #0B0E14);
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(212, 175, 55, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+      z-index: 10;
+    }
+    .central-bead:active, .central-bead.active-press {
+      transform: scale(0.94);
+      box-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
+    }
+    .lap-badge {
+      font-size: 11px;
+      color: var(--gold-bright);
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+    .count-number {
+      font-family: 'Amiri', serif;
+      font-size: 54px;
+      font-weight: bold;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    }
+    .target-fraction {
+      font-size: 13px;
+      color: var(--gold-primary);
+      margin-top: 4px;
+    }
+    .hint-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* الشريط السفلي للتحكم */
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+    }
+    .lifetime-pill {
+      font-size: 12px;
+      background: var(--obsidian-card);
+      border: 1px solid var(--obsidian-stroke);
+      color: var(--gold-bright);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+    .reset-btn {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: var(--ruby);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .reset-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* قائمة الأذكار السريعة */
+    .dhikr-list-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      margin-bottom: 6px;
+      padding: 0 4px;
+    }
+    .dhikr-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .dhikr-scroll::-webkit-scrollbar { display: none; }
+    .dhikr-chip {
+      white-space: nowrap;
+      background: var(--obsidian-card);
+      border: 1px solid var(--obsidian-stroke);
+      color: var(--text-secondary);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dhikr-chip.active {
+      border-color: var(--gold-primary);
+      color: var(--gold-bright);
+      background: var(--obsidian-elevated);
+      font-weight: bold;
+    }
+
+    /* إعدادات إضافية */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--obsidian-card);
+      border: 1px solid var(--obsidian-stroke);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+    .switch-btn {
+      background: var(--obsidian-elevated);
+      border: 1px solid var(--obsidian-stroke);
+      color: var(--text-secondary);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    .switch-btn.active {
+      color: var(--gold-bright);
+      border-color: var(--gold-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>المَسْبَحَةُ المَلَكِيَّة</h1>
+      <p>أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</p>
+    </header>
+
+    <!-- شريط الإحصائيات التراكمية -->
+    <div class="metrics-ribbon">
+      <div class="metric-card total">
+        <span class="metric-title">المجموع الكلي:</span>
+        <span class="metric-val gold" id="grand-total">0</span>
+      </div>
+      <div class="metric-card today">
+        <span class="metric-title">تسبيحات اليوم:</span>
+        <span class="metric-val emerald" id="today-total">0</span>
+      </div>
+    </div>
+
+    <!-- بطاقة الذكر والهدف -->
+    <div class="dhikr-select-card">
+      <div class="dhikr-text-display" id="active-dhikr-text">سُبْحَانَ اللَّهِ</div>
+      <div class="targets-row">
+        <button class="target-btn active" onclick="setTarget(33)">33</button>
+        <button class="target-btn" onclick="setTarget(99)">99</button>
+        <button class="target-btn" onclick="setTarget(100)">100</button>
+        <button class="target-btn" onclick="setTarget(0)">حر (مفتوح)</button>
+      </div>
+    </div>
+
+    <!-- العداد الدائري الملكي -->
+    <div class="royal-counter-wrapper">
+      <canvas id="counterCanvas" class="counter-canvas" width="580" height="580"></canvas>
+      
+      <div class="central-bead" id="beadBtn">
+        <div class="lap-badge" id="lap-badge" style="display:none;">الدورة 1</div>
+        <div class="count-number" id="count-display">0</div>
+        <div class="target-fraction" id="target-display">/ 33</div>
+        <div class="hint-text" id="status-hint">المس للعد (أو اضغط مطولاً)</div>
+      </div>
+    </div>
+
+    <!-- شريط التحكم والسجل الفردي -->
+    <div class="controls-row">
+      <div class="lifetime-pill" id="dhikr-lifetime">إجمالي هذا الذكر: 0</div>
+      <button class="reset-btn" onclick="confirmReset()">تصفير العداد</button>
+    </div>
+
+    <!-- قائمة اختيار الأذكار الشائعة -->
+    <div>
+      <div class="dhikr-list-title">الأذكار المباركة:</div>
+      <div class="dhikr-scroll" id="dhikr-chips-container">
+        <!-- تتولد ديناميكياً بواسطة JavaScript -->
+      </div>
+    </div>
+
+    <!-- خيارات الصوت والاهتزاز -->
+    <div class="toggle-row">
+      <span>التغذية الحسية (الاهتزاز والصوت):</span>
+      <div style="display: flex; gap: 6px;">
+        <button class="switch-btn active" id="vib-toggle" onclick="toggleVibrate()">اهتزاز: تفعيل</button>
+        <button class="switch-btn active" id="snd-toggle" onclick="toggleSound()">صوت: تفعيل</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // قائمة الأذكار الافتراضية
+    const defaultDhikrs = [
+      { id: 'subhanallah', title: 'سُبْحَانَ اللَّهِ' },
+      { id: 'alhamdulillah', title: 'الْحَمْدُ لِلَّهِ' },
+      { id: 'allahuakbar', title: 'اللَّهُ أَكْبَرُ' },
+      { id: 'lailahaillallah', title: 'لَا إِلَٰهَ إِلَّا اللَّهُ' },
+      { id: 'astaghfirullah', title: 'أَسْتَغْفِرُ اللَّهَ' },
+      { id: 'salawat', title: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ' },
+      { id: 'lahawla', title: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ' },
+      { id: 'subhanallahi_wabihamdih', title: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ' }
+    ];
+
+    // استرجاع البيانات المحفوظة من localStorage
+    let currentDhikrIndex = 0;
+    let target = 33;
+    let currentCount = 0;
+    let completedLaps = 0;
+    let enableVibrate = true;
+    let enableSound = true;
+
+    let store = JSON.parse(localStorage.getItem('royal_tasbih_data') || '{}');
+    if (!store.grandTotal) store.grandTotal = 0;
+    if (!store.dhikrTotals) store.dhikrTotals = {};
+    if (!store.history) store.history = {};
+
+    const todayDateKey = new Date().toISOString().slice(0, 10);
+    if (!store.history[todayDateKey]) store.history[todayDateKey] = 0;
+
+    // تهيئة الصوت باستخدام Web Audio API (بدون ملفات صوتية خارجية)
+    let audioCtx = null;
+    function playBeadClick() {
+      if (!enableSound) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(680, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.045);
+      } catch (e) {}
+    }
+
+    // اهتزاز الهاتف
+    function triggerHaptic() {
+      if (!enableVibrate) return;
+      if (navigator.vibrate) {
+        navigator.vibrate(18);
+      }
+    }
+
+    // رسم الدائرة الفلكية وخرزات الـ 33 الذهبية على الـ Canvas
+    const canvas = document.getElementById('counterCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function drawCircularCounter() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const center = { x: w / 2, y: h / 2 };
+      const radius = w * 0.38;
+      const strokeWidth = 24;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // رسم مسار الخلفية
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#141A23';
+      ctx.lineWidth = strokeWidth;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // حساب نسبة الإنجاز
+      const progress = target > 0 ? Math.min(currentCount / target, 1) : (currentCount % 100) / 100;
+      const startAngle = -Math.PI / 2;
+      const sweepAngle = progress * (Math.PI * 2);
+
+      // رسم قوس التقدم الذهبي الملكي
+      if (progress > 0) {
+        const gradient = ctx.createLinearGradient(0, 0, w, h);
+        gradient.addColorStop(0, '#8F721A');
+        gradient.addColorStop(0.5, '#D4AF37');
+        gradient.addColorStop(1, '#F5D77F');
+
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, radius, startAngle, startAngle + sweepAngle);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = strokeWidth;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // رسم الحبة الكريستالية المضيئة في رأس القوس
+        const tipAngle = startAngle + sweepAngle;
+        const tipX = center.x + radius * Math.cos(tipAngle);
+        const tipY = center.y + radius * Math.sin(tipAngle);
+
+        ctx.beginPath();
+        ctx.arc(tipX, tipY, strokeWidth * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(245, 215, 127, 0.5)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(tipX, tipY, strokeWidth * 0.38, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+      }
+
+      // رسم 33 خرزة فلكية على المدار الخارجي
+      const totalBeads = 33;
+      const beadOrbitRadius = radius + strokeWidth * 1.05;
+
+      for (let i = 0; i < totalBeads; i++) {
+        const angle = (i * (2 * Math.PI / totalBeads)) - (Math.PI / 2);
+        const bx = center.x + beadOrbitRadius * Math.cos(angle);
+        const by = center.y + beadOrbitRadius * Math.sin(angle);
+
+        const beadProgress = i / totalBeads;
+        const isPassed = target > 0 && progress >= beadProgress;
+
+        ctx.beginPath();
+        const bRadius = (i % 11 === 0) ? 7 : 4.5;
+        ctx.arc(bx, by, bRadius, 0, Math.PI * 2);
+
+        if (isPassed) {
+          ctx.fillStyle = '#F5D77F';
+          ctx.shadowColor = '#F5D77F';
+          ctx.shadowBlur = (i % 11 === 0) ? 10 : 4;
+        } else if (i % 11 === 0) {
+          ctx.fillStyle = 'rgba(212, 175, 55, 0.7)';
+          ctx.shadowBlur = 0;
+        } else {
+          ctx.fillStyle = '#253142';
+          ctx.shadowBlur = 0;
+        }
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+    }
+
+    // تحديث الواجهة وحفظ البيانات
+    function updateUI() {
+      const activeDhikr = defaultDhikrs[currentDhikrIndex];
+      const dhikrKey = activeDhikr.id;
+
+      document.getElementById('count-display').innerText = currentCount;
+      document.getElementById('active-dhikr-text').innerText = activeDhikr.title;
+      document.getElementById('target-display').innerText = target > 0 ? `/ ${target}` : 'حر (مفتوح)';
+      
+      const lapBadge = document.getElementById('lap-badge');
+      if (completedLaps > 0) {
+        lapBadge.style.display = 'block';
+        lapBadge.innerText = `الدورة ${completedLaps}`;
+      } else {
+        lapBadge.style.display = 'none';
+      }
+
+      const activeDhikrLifetime = store.dhikrTotals[dhikrKey] || 0;
+      document.getElementById('dhikr-lifetime').innerText = `إجمالي هذا الذكر: ${activeDhikrLifetime.toLocaleString()}`;
+      document.getElementById('grand-total').innerText = (store.grandTotal || 0).toLocaleString();
+      document.getElementById('today-total').innerText = (store.history[todayDateKey] || 0).toLocaleString();
+
+      drawCircularCounter();
+      localStorage.setItem('royal_tasbih_data', JSON.stringify(store));
+    }
+
+    // زيادة العداد
+    function increment() {
+      currentCount++;
+      const activeDhikr = defaultDhikrs[currentDhikrIndex];
+      const dhikrKey = activeDhikr.id;
+
+      store.grandTotal = (store.grandTotal || 0) + 1;
+      store.dhikrTotals[dhikrKey] = (store.dhikrTotals[dhikrKey] || 0) + 1;
+      store.history[todayDateKey] = (store.history[todayDateKey] || 0) + 1;
+
+      playBeadClick();
+      triggerHaptic();
+
+      // التحقق من اكتمال الهدف / الدورة
+      if (target > 0 && currentCount >= target) {
+        completedLaps++;
+        currentCount = 0;
+        if (navigator.vibrate && enableVibrate) {
+          navigator.vibrate([40, 80, 40]);
+        }
+      }
+
+      updateUI();
+    }
+
+    // تصفير العداد الحالي
+    function confirmReset() {
+      if (confirm("هل ترغب في إعادة ضبط العداد الحالي إلى الصفر؟ (لن يتم مسح إجمالي التسبيحات المحفوظ).")) {
+        currentCount = 0;
+        completedLaps = 0;
+        updateUI();
+      }
+    }
+
+    // تعيين الهدف
+    function setTarget(newTarget) {
+      target = newTarget;
+      currentCount = 0;
+      completedLaps = 0;
+      document.querySelectorAll('.target-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if ((newTarget === 0 && btn.innerText.includes('حر')) || btn.innerText === String(newTarget)) {
+          btn.classList.add('active');
+        }
+      });
+      updateUI();
+    }
+
+    // تبديل الذكر
+    function selectDhikr(index) {
+      currentDhikrIndex = index;
+      currentCount = 0;
+      completedLaps = 0;
+      renderDhikrChips();
+      updateUI();
+    }
+
+    function renderDhikrChips() {
+      const container = document.getElementById('dhikr-chips-container');
+      container.innerHTML = '';
+      defaultDhikrs.forEach((d, idx) => {
+        const chip = document.createElement('div');
+        chip.className = `dhikr-chip ${idx === currentDhikrIndex ? 'active' : ''}`;
+        chip.innerText = d.title;
+        chip.onclick = () => selectDhikr(idx);
+        container.appendChild(chip);
+      });
+    }
+
+    // تبديل إعدادات الصوت والاهتزاز
+    function toggleVibrate() {
+      enableVibrate = !enableVibrate;
+      const btn = document.getElementById('vib-toggle');
+      btn.innerText = `اهتزاز: ${enableVibrate ? 'تفعيل' : 'تعطيل'}`;
+      btn.classList.toggle('active', enableVibrate);
+    }
+    function toggleSound() {
+      enableSound = !enableSound;
+      const btn = document.getElementById('snd-toggle');
+      btn.innerText = `صوت: ${enableSound ? 'تفعيل' : 'تعطيل'}`;
+      btn.classList.toggle('active', enableSound);
+    }
+
+    // دعم التسبيح التلقائي المستمر عند الضغط المطول (Continuous Press & Hold)
+    const beadBtn = document.getElementById('beadBtn');
+    let autoInterval = null;
+    let holdTimeout = null;
+
+    function startAutoCount() {
+      holdTimeout = setTimeout(() => {
+        document.getElementById('status-hint').innerText = "جاري العد التلقائي...";
+        document.getElementById('status-hint').style.color = "var(--gold-bright)";
+        autoInterval = setInterval(() => {
+          increment();
+        }, 130);
+      }, 350);
+    }
+
+    function stopAut
