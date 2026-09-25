@@ -642,4 +642,38 @@
       }, 350);
     }
 
-    function stopAut
+    function stopAutoCount() {
+      if (holdTimeout) clearTimeout(holdTimeout);
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+        document.getElementById('status-hint').innerText = "المس للعد (أو اضغط مطولاً)";
+        document.getElementById('status-hint').style.color = "var(--text-muted)";
+      }
+    }
+
+    beadBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      beadBtn.classList.add('active-press');
+      startAutoCount();
+    });
+
+    beadBtn.addEventListener('pointerup', (e) => {
+      beadBtn.classList.remove('active-press');
+      if (!autoInterval) {
+        increment();
+      }
+      stopAutoCount();
+    });
+
+    beadBtn.addEventListener('pointercancel', () => {
+      beadBtn.classList.remove('active-press');
+      stopAutoCount();
+    });
+
+    // بدء التشغيل
+    renderDhikrChips();
+    updateUI();
+  </script>
+</body>
+</html>
